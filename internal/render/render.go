@@ -6,14 +6,22 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func RenderOutput(headers []string, rows [][]string) {
+type TableRenderer struct {
+	Headers        []string
+	Rows           [][]string
+	AutoWrapText   bool
+	RowLine        bool
+	AutoMergeCells bool
+}
+
+func (t TableRenderer) RenderOutput() {
 	table := tablewriter.NewWriter(os.Stdout)
 
-	table.SetHeader(headers)
-	table.SetAutoWrapText(true)
-	table.SetRowLine(true)
-	table.SetAutoMergeCells(false)
+	table.SetHeader(t.Headers)
+	table.SetAutoWrapText(t.AutoWrapText)
+	table.SetRowLine(t.RowLine)
+	table.SetAutoMergeCells(t.AutoMergeCells)
 
-	table.AppendBulk(rows)
+	table.AppendBulk(t.Rows)
 	table.Render()
 }

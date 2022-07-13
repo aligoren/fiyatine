@@ -61,7 +61,15 @@ var amazonCmd = &cobra.Command{
 			rows = append(rows, []string{"Amazon", product.Title, product.Price, product.Url})
 		}
 
-		render.RenderOutput(headers, rows)
+		renderer := render.TableRenderer{
+			Headers:        headers,
+			Rows:           rows,
+			AutoWrapText:   true,
+			RowLine:        true,
+			AutoMergeCells: false,
+		}
+
+		renderer.RenderOutput()
 
 		return nil
 	},

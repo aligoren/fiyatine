@@ -60,7 +60,15 @@ var trendyolCmd = &cobra.Command{
 			rows = append(rows, []string{"Trendyol", product.Title, product.Price, product.Url})
 		}
 
-		render.RenderOutput(headers, rows)
+		renderer := render.TableRenderer{
+			Headers:        headers,
+			Rows:           rows,
+			AutoWrapText:   false,
+			RowLine:        true,
+			AutoMergeCells: false,
+		}
+
+		renderer.RenderOutput()
 
 		return nil
 	},

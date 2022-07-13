@@ -62,7 +62,15 @@ var hepsiburadaCmd = &cobra.Command{
 			rows = append(rows, []string{"Hepsiburada", product.Title, product.Price, fmt.Sprintf("https://www.hepsiburada.com/product/%s", product.ID)})
 		}
 
-		render.RenderOutput(headers, rows)
+		renderer := render.TableRenderer{
+			Headers:        headers,
+			Rows:           rows,
+			AutoWrapText:   true,
+			RowLine:        true,
+			AutoMergeCells: false,
+		}
+
+		renderer.RenderOutput()
 
 		return nil
 	},
