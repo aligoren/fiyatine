@@ -23,6 +23,10 @@ Kullanımı şu şekillerde olabilir;
 
 `go run . trendyol Ütü Masası`
 
+### n11
+
+`go run . n11 Ütü Masası`
+
 ### Tümü
 
 Bu şekilde arama yapacaksanız da tamamında arama yapar.
