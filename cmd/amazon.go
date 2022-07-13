@@ -16,46 +16,36 @@ limitations under the License.
 package cmd
 
 import (
-	"log"
+	"fmt"
 
-	"github.com/aligoren/fiyatine/internal/models"
-	"github.com/aligoren/fiyatine/internal/services"
 	"github.com/spf13/cobra"
 )
 
-// hepsiburadaCmd represents the hepsiburada command
-var hepsiburadaCmd = &cobra.Command{
-	Use:   "hepsiburada",
-	Short: "Hepsiburada üzerinde arama yap",
-	Long:  `Spesifik olarak hepsiburada üzerinde arama yapmanıza olanak sağlar`,
+// amazonCmd represents the amazon command
+var amazonCmd = &cobra.Command{
+	Use:   "amazon",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		hb := services.HepsiburadaService{
-			SearchParams: models.ProductSearchModel{
-				ProductName: "Ütü Masası",
-			},
-		}
-
-		service := services.BaseService{ProductService: hb}
-
-		results := service.Search()
-
-		if len(results) == 0 {
-			log.Println("Hepsiburada sitesinde aradığınız kriterlere uygun ürün bulunamadı")
-		}
+		fmt.Println("amazon called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(hepsiburadaCmd)
+	rootCmd.AddCommand(amazonCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// hepsiburadaCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// amazonCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// hepsiburadaCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// amazonCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,20 +1,20 @@
 package services
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 
 	"github.com/aligoren/fiyatine/internal/models"
 	"github.com/aligoren/fiyatine/internal/parsers"
+	"github.com/aligoren/fiyatine/internal/utils"
 )
 
-type HepsiBuradaService struct {
+type HepsiburadaService struct {
 	SearchParams models.ProductSearchModel
 }
 
-func (service HepsiBuradaService) buildUrl() string {
+func (service HepsiburadaService) buildUrl() string {
 	requestUrl := url.URL{
 		Scheme: "https",
 		Host:   "hepsiburada.com",
@@ -30,39 +30,32 @@ func (service HepsiBuradaService) buildUrl() string {
 	return requestUrl.String()
 }
 
-func (service HepsiBuradaService) searchProduct() {
+func (service HepsiburadaService) searchProduct() []models.ResponseModel {
 
 	baseUrl := service.buildUrl()
 
-	rqeuest, err := http.NewRequest(http.MethodGet, baseUrl, nil)
-
-	if err != nil {
-		//return nil, err
-		log.Fatal(err)
+	httpClient := utils.HttpClient{
+		Method:  http.MethodGet,
+		BaseUrl: baseUrl,
+		Header: map[string]string{
+			"Accept":     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+			"referer":    "https://www.hepsiburada.com/",
+			"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
+		},
+		Body: nil,
 	}
 
-	rqeuest.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-	rqeuest.Header.Add("referer", "https://www.hepsiburada.com/")
-	rqeuest.Header.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36")
-
-	response, err := http.DefaultClient.Do(rqeuest)
+	response, err := httpClient.MakeGet()
 	if err != nil {
-		//return nil, err
-		log.Fatal(err)
-	}
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		//return nil, err
-		log.Fatal(err)
+		log.Printf("error: %v", err)
 	}
 
 	parser := parsers.BaseParser{
-		ParserService: parsers.HepsiBuradaParser{
-			Content: string(body),
+		ParserService: parsers.HepsiburadaParser{
+			Content: response.Body,
 		},
 	}
 
-	parser.Parse()
+	return parser.Parse()
 
 }

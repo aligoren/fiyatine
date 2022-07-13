@@ -1,5 +1,7 @@
 package parsers
 
+import "github.com/aligoren/fiyatine/internal/models"
+
 type ParserService interface {
-	parseServiceResponse()
+	parseServiceResponse() []models.ResponseModel
 }

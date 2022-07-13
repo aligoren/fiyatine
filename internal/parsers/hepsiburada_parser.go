@@ -1,11 +1,46 @@
 package parsers
 
-import "fmt"
+import (
+	"io"
+	"log"
+	"strconv"
+	"strings"
 
-type HepsiBuradaParser struct {
-	Content string
+	"github.com/PuerkitoBio/goquery"
+	"github.com/aligoren/fiyatine/internal/models"
+)
+
+type HepsiburadaParser struct {
+	Content io.Reader
 }
 
-func (p HepsiBuradaParser) parseServiceResponse() {
-	fmt.Printf("%v", p.Content)
+func (p HepsiburadaParser) parseServiceResponse() []models.ResponseModel {
+
+	doc, err := goquery.NewDocumentFromReader(p.Content)
+
+	if err != nil {
+		//return nil, err
+		log.Fatal(err)
+	}
+
+	var items []models.ResponseModel
+
+	doc.Find(".productListContent-item div a").Each(func(i int, s *goquery.Selection) {
+		productTitle, titleExist := s.Attr("title")
+		url, _ := s.Attr("href")
+		priceData := s.Find("div[data-test-id='price-current-price']").Contents().FilterFunction(func(i int, s *goquery.Selection) bool {
+			return !s.Is("span")
+		}).Text()
+		price, _ := strconv.ParseFloat(strings.Replace(priceData, ",", ".", 1), 64)
+
+		if titleExist {
+			items = append(items, models.ResponseModel{
+				Title: productTitle,
+				Price: price,
+				Url:   url,
+			})
+		}
+	})
+
+	return items
 }
