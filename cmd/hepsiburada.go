@@ -16,7 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"errors"
 	"log"
+	"strings"
 
 	"github.com/aligoren/fiyatine/internal/models"
 	"github.com/aligoren/fiyatine/internal/render"
@@ -29,11 +31,18 @@ var hepsiburadaCmd = &cobra.Command{
 	Use:   "hepsiburada",
 	Short: "Hepsiburada üzerinde arama yap",
 	Long:  `Spesifik olarak hepsiburada üzerinde arama yapmanıza olanak sağlar`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args:  cobra.MinimumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+
+		if len(args) == 0 {
+			return errors.New("lütfen aranacak ürünün adını giriniz")
+		}
+
+		productName := strings.Join(args, " ")
 
 		hb := services.HepsiburadaService{
 			SearchParams: models.ProductSearchModel{
-				ProductName: "Ütü Masası",
+				ProductName: productName,
 			},
 		}
 
@@ -53,6 +62,8 @@ var hepsiburadaCmd = &cobra.Command{
 		}
 
 		render.RenderOutput(headers, rows)
+
+		return nil
 	},
 }
 
