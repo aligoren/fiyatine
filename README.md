@@ -4,6 +4,11 @@ Bu proje bir CLI projesidir. Bu proje ile birlikte Amazon, Trendyol, Hepsiburada
 
 Provider sayısı daha da genişletilebilir.
 
+## NOT
+
+**Ekonominin çok iyi olması, şahlanması nedeniyle fiyatları ucuzdan pahalıya olacak şekilde sıraladım. Durduk yere dış güçler master'a pushlasın istemem**
+
+
 ## Kullanım
 
 Kullanımı şu şekillerde olabilir;
