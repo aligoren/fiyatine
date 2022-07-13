@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -29,14 +31,20 @@ func (p TrendyolParser) parseServiceResponse() []models.ResponseModel {
 		productTitle, titleExist := s.Find(".prdct-desc-cntnr-ttl").Attr("title")
 		url, _ := s.Attr("href")
 		priceData := strings.Replace(s.Find(".prc-box-dscntd").Text(), " TL", "", 1)
+		priceField, _ := strconv.ParseFloat(strings.Replace(priceData, ",", ".", 1), 64)
 
 		if titleExist {
 			items = append(items, models.ResponseModel{
-				Title: productTitle,
-				Url:   fmt.Sprintf("https://www.trendyol.com%s", url),
-				Price: fmt.Sprintf("₺%s", priceData),
+				Title:      productTitle,
+				Url:        fmt.Sprintf("https://www.trendyol.com%s", url),
+				Price:      fmt.Sprintf("₺%s", priceData),
+				PriceField: priceField,
 			})
 		}
+	})
+
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].PriceField < items[j].PriceField
 	})
 
 	return items
