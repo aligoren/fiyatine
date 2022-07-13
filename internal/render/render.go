@@ -12,6 +12,7 @@ func RenderOutput(headers []string, rows [][]string) {
 	table.SetHeader(headers)
 	table.SetAutoWrapText(false)
 	table.SetRowLine(true)
+	table.SetAutoMergeCells(false)
 
 	table.AppendBulk(rows)
 	table.Render()

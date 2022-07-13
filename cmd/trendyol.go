@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 
@@ -27,39 +26,38 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// hepsiburadaCmd represents the hepsiburada command
-var hepsiburadaCmd = &cobra.Command{
-	Use:   "hepsiburada",
-	Short: "Hepsiburada üzerinde arama yap",
-	Long:  "Spesifik olarak hepsiburada üzerinde arama yapmanıza olanak sağlar",
+// trendyolCmd represents the trendyol command
+var trendyolCmd = &cobra.Command{
+	Use:   "trendyol",
+	Short: "Trendyol üzerinde arama yap",
+	Long:  "Spesifik olarak trendol üzerinde arama yapmanıza olanak sağlar",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if len(args) == 0 {
 			return errors.New("lütfen aranacak ürünün adını giriniz")
 		}
 
 		productName := strings.Join(args, " ")
 
-		hepsiburada := services.HepsiburadaService{
+		trendyol := services.TrendyolService{
 			SearchParams: models.ProductSearchModel{
 				ProductName: productName,
 			},
 		}
 
-		service := services.BaseService{ProductService: hepsiburada}
+		service := services.BaseService{ProductService: trendyol}
 
 		products := service.Search()
 
 		if len(products) == 0 {
-			log.Println("Hepsiburada sitesinde aradığınız kriterlere uygun ürün bulunamadı")
+			log.Println("Trendyol sitesinde aradığınız kriterlere uygun ürün bulunamadı")
 		}
 
 		headers := []string{"Satıcı", "Ürün Adı", "Fiyat", "Url"}
 		rows := [][]string{}
 
 		for _, product := range products {
-			rows = append(rows, []string{"Hepsiburada", product.Title, product.Price, fmt.Sprintf("https://www.hepsiburada.com/product/%s", product.ID)})
+			rows = append(rows, []string{"Trendyol", product.Title, product.Price, product.Url})
 		}
 
 		render.RenderOutput(headers, rows)
@@ -69,15 +67,15 @@ var hepsiburadaCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(hepsiburadaCmd)
+	rootCmd.AddCommand(trendyolCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// hepsiburadaCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// trendyolCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// hepsiburadaCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// trendyolCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
