@@ -1,9 +1,9 @@
 package parsers
 
 import (
+	"fmt"
 	"io"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -31,7 +31,6 @@ func (p HepsiburadaParser) parseServiceResponse() []models.ResponseModel {
 		priceData := s.Find("div[data-test-id='price-current-price']").Contents().FilterFunction(func(i int, s *goquery.Selection) bool {
 			return !s.Is("span")
 		}).Text()
-		price, _ := strconv.ParseFloat(strings.Replace(priceData, ",", ".", 1), 64)
 
 		splitUrl := strings.Split(url, "-")
 		id := splitUrl[len(splitUrl)-1]
@@ -41,7 +40,7 @@ func (p HepsiburadaParser) parseServiceResponse() []models.ResponseModel {
 				ID:    id,
 				Title: productTitle,
 				Url:   url,
-				Price: price,
+				Price: fmt.Sprintf("₺%s", priceData),
 			})
 		}
 	})

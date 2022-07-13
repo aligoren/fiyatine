@@ -16,10 +16,10 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/aligoren/fiyatine/internal/models"
+	"github.com/aligoren/fiyatine/internal/render"
 	"github.com/aligoren/fiyatine/internal/services"
 	"github.com/spf13/cobra"
 )
@@ -39,13 +39,20 @@ var hepsiburadaCmd = &cobra.Command{
 
 		service := services.BaseService{ProductService: hb}
 
-		results := service.Search()
+		products := service.Search()
 
-		if len(results) == 0 {
+		if len(products) == 0 {
 			log.Println("Hepsiburada sitesinde aradığınız kriterlere uygun ürün bulunamadı")
 		}
 
-		fmt.Printf("%v\n", results)
+		headers := []string{"Satıcı", "ID", "Ürün Adı", "Fiyat"}
+		rows := [][]string{}
+
+		for _, product := range products {
+			rows = append(rows, []string{"Hepsiburada", product.ID, product.Title, product.Price})
+		}
+
+		render.RenderOutput(headers, rows)
 	},
 }
 
