@@ -33,11 +33,15 @@ func (p HepsiburadaParser) parseServiceResponse() []models.ResponseModel {
 		}).Text()
 		price, _ := strconv.ParseFloat(strings.Replace(priceData, ",", ".", 1), 64)
 
+		splitUrl := strings.Split(url, "-")
+		id := splitUrl[len(splitUrl)-1]
+
 		if titleExist {
 			items = append(items, models.ResponseModel{
+				ID:    id,
 				Title: productTitle,
-				Price: price,
 				Url:   url,
+				Price: price,
 			})
 		}
 	})

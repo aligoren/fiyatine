@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/aligoren/fiyatine/internal/models"
@@ -43,6 +44,8 @@ var hepsiburadaCmd = &cobra.Command{
 		if len(results) == 0 {
 			log.Println("Hepsiburada sitesinde aradığınız kriterlere uygun ürün bulunamadı")
 		}
+
+		fmt.Printf("%v\n", results)
 	},
 }
 
