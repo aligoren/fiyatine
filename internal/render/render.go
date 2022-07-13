@@ -10,7 +10,7 @@ func RenderOutput(headers []string, rows [][]string) {
 	table := tablewriter.NewWriter(os.Stdout)
 
 	table.SetHeader(headers)
-	table.SetAutoWrapText(false)
+	table.SetAutoWrapText(true)
 	table.SetRowLine(true)
 	table.SetAutoMergeCells(false)
 

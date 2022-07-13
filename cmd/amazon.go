@@ -16,23 +16,54 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
+	"errors"
+	"log"
+	"strings"
 
+	"github.com/aligoren/fiyatine/internal/models"
+	"github.com/aligoren/fiyatine/internal/render"
+	"github.com/aligoren/fiyatine/internal/services"
 	"github.com/spf13/cobra"
 )
 
 // amazonCmd represents the amazon command
 var amazonCmd = &cobra.Command{
 	Use:   "amazon",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Amazon üzerinde arama yap",
+	Long:  "Spesifik olarak amazon üzerinde arama yapmanıza olanak sağlar",
+	Args:  cobra.MinimumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("amazon called")
+		if len(args) == 0 {
+			return errors.New("lütfen aranacak ürünün adını giriniz")
+		}
+
+		productName := strings.Join(args, " ")
+
+		amazon := services.AmazonService{
+			SearchParams: models.ProductSearchModel{
+				ProductName: productName,
+			},
+		}
+
+		service := services.BaseService{ProductService: amazon}
+
+		products := service.Search()
+
+		if len(products) == 0 {
+			log.Println("Amazon sitesinde aradığınız kriterlere uygun ürün bulunamadı")
+		}
+
+		headers := []string{"Satıcı", "Ürün Adı", "Fiyat", "Url"}
+		rows := [][]string{}
+
+		for _, product := range products {
+			rows = append(rows, []string{"Amazon", product.Title, product.Price, product.Url})
+		}
+
+		render.RenderOutput(headers, rows)
+
+		return nil
 	},
 }
 
