@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -98,8 +99,9 @@ var tumuCmd = &cobra.Command{
 			AutoMergeCells: false,
 		}
 
+		fmt.Printf("%d ürün bulundu\n", len(products))
 		renderer.RenderOutput()
-
+		fmt.Printf("%d satıcıdan toplam %d ürün bulundu\n", len(baseServices), len(products))
 		return nil
 
 	},
