@@ -18,7 +18,9 @@ package cmd
 import (
 	"errors"
 	"log"
+	"sort"
 	"strings"
+	"sync"
 
 	"github.com/aligoren/fiyatine/internal/models"
 	"github.com/aligoren/fiyatine/internal/render"
@@ -26,39 +28,66 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// hepsiburadaCmd represents the hepsiburada command
-var hepsiburadaCmd = &cobra.Command{
-	Use:   "hepsiburada",
-	Short: "Hepsiburada üzerinde arama yap",
-	Long:  "Spesifik olarak hepsiburada üzerinde arama yapmanıza olanak sağlar",
-	Args:  cobra.MinimumNArgs(1),
+// tumuCmd represents the tumu command
+var tumuCmd = &cobra.Command{
+	Use:   "tumu",
+	Short: "Tüm satıcılar üzerinde arama yap",
+	Long:  "Tüm satıcılar üzerinde arama yapmanıza olanak sağlar",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		if len(args) == 0 {
 			return errors.New("lütfen aranacak ürünün adını giriniz")
 		}
 
 		productName := strings.Join(args, " ")
 
-		hepsiburada := services.HepsiburadaService{
-			SearchParams: models.ProductSearchModel{
-				ProductName: productName,
+		searchParams := models.ProductSearchModel{
+			ProductName: productName,
+		}
+
+		baseServices := []services.BaseService{
+			{
+				ProductService: services.AmazonService{SearchParams: searchParams},
+			},
+			{
+				ProductService: services.TrendyolService{SearchParams: searchParams},
+			},
+			{
+				ProductService: services.HepsiburadaService{SearchParams: searchParams},
+			},
+			{
+				ProductService: services.N11Service{SearchParams: searchParams},
 			},
 		}
 
-		service := services.BaseService{ProductService: hepsiburada}
+		var products []models.ResponseModel
 
-		products := service.Search()
+		var wg sync.WaitGroup
+		var mu sync.Mutex
+		for _, service := range baseServices {
+			wg.Add(1)
+			go func(baseService services.BaseService) {
+				defer wg.Done()
+				mu.Lock()
+				products = append(products, baseService.Search()...)
+				mu.Unlock()
+			}(service)
+
+		}
+		wg.Wait()
 
 		if len(products) == 0 {
-			log.Println("Hepsiburada sitesinde aradığınız kriterlere uygun ürün bulunamadı")
+			log.Println("Tüm aramalar içerisinde aradığınız kriterlere uygun ürün bulunamadı")
 		}
+
+		sort.Slice(products, func(i, j int) bool {
+			return products[i].PriceField < products[j].PriceField
+		})
 
 		headers := []string{"Satıcı", "Ürün Adı", "Fiyat", "Url"}
 		rows := [][]string{}
 
 		for _, product := range products {
-			rows = append(rows, []string{"Hepsiburada", product.Title, product.Price, product.Url})
+			rows = append(rows, []string{product.Vendor, product.Title, product.Price, product.Url})
 		}
 
 		renderer := render.TableRenderer{
@@ -72,19 +101,20 @@ var hepsiburadaCmd = &cobra.Command{
 		renderer.RenderOutput()
 
 		return nil
+
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(hepsiburadaCmd)
+	rootCmd.AddCommand(tumuCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// hepsiburadaCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// tumuCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// hepsiburadaCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// tumuCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

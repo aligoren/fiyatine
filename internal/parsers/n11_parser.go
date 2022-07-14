@@ -42,6 +42,7 @@ func (p N11Parser) parseServiceResponse() []models.ResponseModel {
 
 		if titleExist {
 			items = append(items, models.ResponseModel{
+				Vendor:     "n11",
 				Title:      productTitle,
 				Url:        url,
 				Price:      fmt.Sprintf("₺%s", priceData),

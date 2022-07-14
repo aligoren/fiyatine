@@ -42,6 +42,7 @@ func (p AmazonParser) parseServiceResponse() []models.ResponseModel {
 
 		if titleExist && priceField > 0 {
 			items = append(items, models.ResponseModel{
+				Vendor:     "Amazon",
 				Title:      productTitle,
 				Url:        fmt.Sprintf("https://www.amazon.com.tr%s", url),
 				Price:      fmt.Sprintf("₺%s", priceData),

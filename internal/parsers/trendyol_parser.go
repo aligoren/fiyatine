@@ -35,6 +35,7 @@ func (p TrendyolParser) parseServiceResponse() []models.ResponseModel {
 
 		if titleExist {
 			items = append(items, models.ResponseModel{
+				Vendor:     "Trendyol",
 				Title:      productTitle,
 				Url:        fmt.Sprintf("https://www.trendyol.com%s", url),
 				Price:      fmt.Sprintf("₺%s", priceData),

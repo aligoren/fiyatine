@@ -40,9 +40,10 @@ func (p HepsiburadaParser) parseServiceResponse() []models.ResponseModel {
 
 		if titleExist {
 			items = append(items, models.ResponseModel{
+				Vendor:     "Hepsiburada",
 				ID:         id,
 				Title:      productTitle,
-				Url:        url,
+				Url:        fmt.Sprintf("https://www.hepsiburada.com/product/%s", id),
 				Price:      fmt.Sprintf("₺%s", priceData),
 				PriceField: priceField,
 			})
